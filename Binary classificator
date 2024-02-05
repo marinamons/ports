@@ -1,0 +1,67 @@
+import importlib  
+import pandas as pd  
+import sklearn  
+from sklearn.model_selection import train_test_split  
+from sklearn.naive_bayes import GaussianNB  
+from sklearn.datasets import load_breast_cancer  
+from sklearn.metrics import accuracy_score  
+  
+# 0- Package verification  
+packs = [ 'pandas', 'sklearn']  
+  
+def verificar_pack(pack):  
+    try:  
+        importlib.import_module(pack)  
+        return True  
+    except ImportError:  
+        return False  
+  
+for pack in packs:  
+    if verificar_pack(pack):  
+        print(f'O pacote "{pack}" está instalado.')  
+    else:  
+        print(f'O pacote "{pack}" não está instalado.')  
+  
+  
+  
+# data cleaning  
+  
+data = load_breast_cancer()  
+df = pd.DataFrame(data.data, columns=data.feature_names)  
+df['target'] = data.target  
+  
+# visualization  
+print(df.head())  
+print(df.columns)  
+print(df.describe())  
+  
+features = df.drop('target', axis=1)  
+labels = df['target']  
+first_row = df.iloc[0]  
+benign_samples = df[df['target'] == 1]  
+print(benign_samples.head())  
+  
+  
+# Split our data  
+train, test, train_labels, test_labels = train_test_split(features,labels,test_size=0.33,random_state=42)  
+  
+# gaussian classifier  
+  
+gnb = GaussianNB()  
+  
+# train  
+  
+model = gnb.fit(train,train_labels)  
+  
+# witch time  
+  
+preds = gnb.predict(test)  
+  
+print(preds)  
+  
+# now you should see a taylor swift song in binary  (0 malignant tumor 1 benignant tumor )  
+  
+# Check model accuracy  
+  
+print(accuracy_score(test_labels, preds))  
+  
